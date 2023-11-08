@@ -1,0 +1,91 @@
+{
+  "expo": {
+    "name": "Recyclium Mobile App",
+    "slug": "recyclium-mobile-app",
+    "description": "Application for collectiong and restoring bottles to help nature",
+    "version": "1.0.13",
+    "orientation": "portrait",
+    "icon": "./assets/icon_recyclium.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dataunion.Recyclium",
+      "buildNumber": "1.0.10",
+      "config": {
+        "googleMapsApiKey": "AIzaSyDU8YrHPiNQD_KnXrY1Rew9_NAJ_NEsGL8",
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow Recyclium to access camera. We need your permission to scan QR code.",
+        "NSMicrophoneUsageDescription": "Allow Recyclium Mobile App to access your microphone"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon_recyclium.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyB80AymQm7H-ldy8bAHEgxq2ie711gjqms"
+        }
+      },
+      "package": "com.dataunion.recyclium",
+      "versionCode": 9,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    // "runtimeVersion": {
+    //   "policy": "appVersion"
+    // },
+    "extra": {
+      "eas": {
+        "projectId": "c9b68b85-e8e5-42a8-adc6-ec9502719e5d"
+      }
+    },
+    "owner": "onlinesmiledev",
+    "plugins": [
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow Recyclium to access camera. We need your permission to scan QR code."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends.",
+          "cameraPermission": "Allow app to open the camera"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow app to access your camera."
+        }
+      ],
+      [
+        "expo-updates",
+        {
+          "username": "enumdev"
+        }
+      ] 
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+/** CURL FOR CREATE_MISSION PUBLIC_ADDRESS */
+
+curl --location --request POST 'https://crab.dev.dataunion.app/register' -H 'Content-Type: application/json' -d '{"public_address" : "0xb73d09EC8Ab1Abb93aAb1437a99E80fc9a731496"}'
+
+curl --location --request GET 'https://crab.dev.dataunion.app/get-nonce?public_address=0xE8ace98ED16029A5550F187665457381E2cFc340'
+
+curl --location --request POST 'https://crab.dev.dataunion.app/login' -H 'Content-Type: application/json' -d '{"public_address" : "0xE8ace98ED16029A5550F187665457381E2cFc340", "signature": "0x57cca7688ffc81cd6b13f25d711f77102525d88ccfb04e724310c756cdc122562597bc5dcf11b0d2d3906223f2c2825ef42a6e3f5e25311fbd0056a31aea33891b"}'
+
+/** CURL FOR COLLECT_MISSIONS PUBLIC_ADDRESS */
+
+curl --location --request POST 'https://crab.dev.dataunion.app/register' -H 'Content-Type: application/json' -d '{"public_address" : "0x3e2d7cbBB25e5e92A72BB16AE9186272BAc00B1B"}'
+
+curl --location --request GET 'https://crab.dev.dataunion.app/get-nonce?public_address=0x3e2d7cbBB25e5e92A72BB16AE9186272BAc00B1B'
+
+curl --location --request POST 'https://crab.dev.dataunion.app/login' -H 'Content-Type: application/json' -d '{"public_address" : "0x3e2d7cbBB25e5e92A72BB16AE9186272BAc00B1B", "signature": "0xa85f285d3adefcacf6890731b0e204d3139672bf0a87460cd3fb3ed2a50f500c59a8388bb59cea73e08f51e684c8a9594a7c0ba83eddb6878f458e775d09108f1c"}'
+
+/** MISSION CURL */
+
+curl --location --request GET 'http://https://crab.dev.dataunion.app/api/v1/missions/info?type=upload&status=completed&page=1' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3NjU3MDcwMSwianRpIjoiZDNmYTJmOTctZGY4MS00NTQ0LTljYjgtNTgwMmQ4YmMwNzI2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjB4QzA4QjU1NDJEMTc3YWM2Njg2OTQ2OTIwNDA5NzQxNDYzYTE1ZERkQiIsIm5iZiI6MTY3NjU3MDcwMSwiZXhwIjoxNjc2NTcxOTAxLCJpc19hZG1pbiI6ZmFsc2UsInJvbGVzIjpbInVzZXIiXX0.-bh-yc84ZGJ_UhSLvmrBo7ALUpHOEkqK6GH9cELd75E'
+
+curl --location --request GET 'https://crab.dev.dataunion.app/api/v1/missions/info?type=upload&status=completed&page=1' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3NjU3MDcwMSwianRpIjoiZDNmYTJmOTctZGY4MS00NTQ0LTljYjgtNTgwMmQ4YmMwNzI2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjB4QzA4QjU1NDJEMTc3YWM2Njg2OTQ2OTIwNDA5NzQxNDYzYTE1ZERkQiIsIm5iZiI6MTY3NjU3MDcwMSwiZXhwIjoxNjc2NTcxOTAxLCJpc19hZG1pbiI6ZmFsc2UsInJvbGVzIjpbInVzZXIiXX0.-bh-yc84ZGJ_UhSLvmrBo7ALUpHOEkqK6GH9cELd75E'
+
+
+curl --location --request POST 'https://crab.dev.dataunion.app/api/v1/upload-file' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3NjkyOTUzNiwianRpIjoiMDQ2ODQ2MTktOTYxOC00ZDcyLWJmOTQtOGY5MjYxYmU2YzE2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjB4RThhY2U5OEVEMTYwMjlBNTU1MEYxODc2NjU0NTczODFFMmNGYzM0MCIsIm5iZiI6MTY3NjkyOTUzNiwiZXhwIjoxNjc2OTMwNzM2LCJpc19hZG1pbiI6ZmFsc2UsInJvbGVzIjpbInVzZXIiXX0.t9sPgs6oAC-ikLnGbPXFLrBV7oCchOtbCUTx3KmoF68' \
+--form 'latitude=44.7943159' \
+--form 'longitude=20.5152157' \
+--form 'file=@"file:///Downloads/test.jpg"'
+
+
+{"id": "entity_list:GjsHMISSHtNtlxT"}

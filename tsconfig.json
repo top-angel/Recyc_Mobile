@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "strict": false,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": ["DOM", "ESNext"],
+    "moduleResolution": "node",
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "ESNext",
+    "baseUrl": "."
+  },
+  "extends": "expo/tsconfig.base",
+  "include": [
+    ".eslintrc.js",
+    "postcss.config.js",
+    "tailwind.config.js",
+    "babel.config.js",
+    "app.json",
+    "eas.json",
+    ".prettierrc",
+    "*.ts",
+    "*.tsx",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+  ],
+}

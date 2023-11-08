@@ -1,0 +1,37 @@
+{
+  "cli": {
+    "version": ">= 3.14.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    },
+    "production": {
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "rn.dev@yahoo.com",
+        "ascAppId": "6446051167",
+        "appleTeamId": "43LAV2W923",
+        "ascApiKeyPath": "./key.p8",
+        "ascApiKeyId": "24G8UWW9MB",
+        "ascApiKeyIssuerId": "75e80dc8-f23e-4f19-93c4-30f5ec909d87"
+      }
+    }
+  }
+}
