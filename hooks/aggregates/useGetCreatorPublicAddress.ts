@@ -1,6 +1,7 @@
 import "react-native-get-random-values";
 import "@ethersproject/shims";
 import { Wallet, providers } from "ethers";
+import { id } from "ethers/lib/utils";
 import { useEffect, useState } from "react";
 import { StorageType } from "enums/storageTypes";
 import { getValueFromSecureStore } from "lib/secureStore";
@@ -18,7 +19,7 @@ const useGetCreatorPublicAddress = () => {
         StorageType.PRIVATE_KEY_CREATOR,
       );
 
-      const wallet = new Wallet(result, provider);
+      const wallet = new Wallet(id(result));
       setPublicAddress(wallet.address);
     };
 

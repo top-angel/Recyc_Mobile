@@ -15,16 +15,16 @@ export const createNewMission = createAsyncThunk<
 >(
   "creator/missionNew",
   async ({ formData, accessToken }, { rejectWithValue }) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
+      },
+    };
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "multipart/form-data",
-        },
-      };
-
       const { data } = await axiosServer.post(
-        "/api/v1/bounty/create",
+        "/register-creator",
         formData,
         config,
       );
@@ -34,12 +34,12 @@ export const createNewMission = createAsyncThunk<
         text1: "Mission successfully created.",
       });
 
-      return true;
+      return data;
     } catch (error) {
       const message = generateMessageFromError(error);
       Toast.show({
         type: "error",
-        text1: message,
+        text1: error.response.data.message,
       });
       return rejectWithValue({ message });
     }

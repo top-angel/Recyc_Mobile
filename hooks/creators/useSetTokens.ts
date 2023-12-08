@@ -10,9 +10,9 @@ const useSetTokens = () => {
   );
 
   useEffect(() => {
+    console.log("------- Create Creator Token -------", access_token);
     const secureToStore = async (token: string, refresh: string) => {
       await setValueIntoSecureCode(StorageType.ACCESS_TOKEN, token);
-      await setValueIntoSecureCode(StorageType.REFRESH_TOKEN, refresh);
     };
 
     if (status === "success") {

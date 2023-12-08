@@ -35,7 +35,7 @@ const StorerRatingCard: FC = () => {
           style={{ fontFamily: "Nunito" }}
           className="text-[14px] leading-[20px] font-normal text-[#1E5355] text-right"
         >
-          345 Reviews
+          0 Reviews
         </Text>
       </View>
     </View>

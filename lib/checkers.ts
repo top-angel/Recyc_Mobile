@@ -9,6 +9,11 @@ type MissionCreate = {
   image: string;
 };
 
+type CollectorCreate = {
+  bounty: CollectorBounty;
+  image: string;
+};
+
 export const checkStorerApplication = (application: StorersDoc) => {
   if (!application.name) {
     Toast.show({
@@ -18,11 +23,19 @@ export const checkStorerApplication = (application: StorersDoc) => {
     return false;
   }
 
-  if (
-    !application.address &&
-    application.geocode.lat === 0 &&
-    application.geocode.lng === 0
-  ) {
+  // if (
+  //   !application.address &&
+  //   application.geocode.lat === 0 &&
+  //   application.geocode.lng === 0
+  // ) {
+  //   Toast.show({
+  //     type: "error",
+  //     text1: "Address is required",
+  //   });
+  //   return false;
+  // }
+
+  if (!application.address) {
     Toast.show({
       type: "error",
       text1: "Address is required",
@@ -132,6 +145,34 @@ export const checkMissionCreate = ({
     Toast.show({
       type: "error",
       text1: "Items count is required.",
+    });
+    return false;
+  }
+
+  if (!image) {
+    Toast.show({
+      type: "error",
+      text1: "You have to upload image first.",
+    });
+    return false;
+  }
+
+  return true;
+};
+
+export const checkCollectorCreate = ({ bounty, image }: CollectorCreate) => {
+  if (!bounty.firstName) {
+    Toast.show({
+      type: "error",
+      text1: "First Name is required.",
+    });
+    return false;
+  }
+
+  if (!bounty.lastName) {
+    Toast.show({
+      type: "error",
+      text1: "Last Name is required.",
     });
     return false;
   }

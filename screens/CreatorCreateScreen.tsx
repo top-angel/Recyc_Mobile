@@ -11,9 +11,23 @@ import {
 } from "react-native";
 import { FC, memo, useCallback, useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Wallet } from "ethers";
+import { id } from "ethers/lib/utils";
 import BackButton from "components/header/BackButton";
 import HeaderTitle from "components/header/HeaderTitle";
 import ModalMissionCreateThanks from "components/collectors/ModalMissionCreateThanks";
+import { loginUser } from "redux/auth/authLogin/authLogin.actions";
+import { useGetPrivateKey } from "hooks/creators/useGetPrivateKey";
+import { getCreatorProfile } from "redux/creators/creatorGetProfile/creatorGetProfile.action";
+import {
+  getValueFromSecureStore,
+  setValueIntoSecureCode,
+} from "lib/secureStore";
+import { StorageType } from "enums/storageTypes";
+import { useSetTokens } from "hooks/creators/useSetTokens";
+import { useGetCreatorPublicAddress } from "hooks/aggregates/useGetCreatorPublicAddress";
+import ModalApplicationVerified from "components/verify-storage/ModalApplicationVerified";
+import { useLogin } from "hooks/creators/useLogin";
 import { useShowNavigationHeader } from "../hooks/useShowNavigationHeader";
 import { ROUTES } from "../navigation/NavigationTypes";
 import { useGetLocation } from "../hooks/creators/useGetLocation";
@@ -30,11 +44,13 @@ import Spinner from "../components/global/Spinner";
 import { BountyType } from "../enums/bountyType";
 import { checkMissionCreate } from "../lib/checkers";
 import { createNewMission } from "../redux/creators/creatorCreateMission/creatorCreateMission.actions";
-import { useSetEntityListId } from "../hooks/creators/useSetEntityListId";
 import { ColorSchema } from "../enums/colorSchema";
+import { getUserNonce } from "../redux/auth/authGetNonce/authGetNonce.actions";
 
 const CreatorCreateScreen: FC = () => {
-  const { success } = useAppSelector((state) => state.creatorMissionNew);
+  const { nonce, success } = useAppSelector((state) => state.creatorMissionNew);
+  const { result } = useAppSelector((state) => state.creatorGetProfile);
+  const { status, access_token } = useAppSelector((state) => state.authLogin);
 
   const isIos = Platform.OS === "ios" || Platform.OS === "macos";
 
@@ -52,9 +68,11 @@ const CreatorCreateScreen: FC = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [formDataFile, setFormDataFile] = useState<FormDataFile>();
-  const [entityListId, setEntityListId] = useState<string>("");
   const [isTerms, setIsTerms] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [modalVerifyVisiable, setModalVerifyVisiable] =
+    useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -66,20 +84,23 @@ const CreatorCreateScreen: FC = () => {
     navigateToHome: ROUTES.HOME,
   });
 
-  /** TAKE USER LOCATION */
-  const { loading } = useGetLocation();
-
   /** TAKE AUTH TOKENS FROM STORAGE */
-  useGetTokens({ setAccessToken, setRefreshToken });
+  // useGetTokens({ setAccessToken, setRefreshToken });
 
   /** UPDATE ACCESS TOKEN ON REFRESH TOKEN */
-  useOnSuccessRefreshToken({ setAccessToken });
+  // useOnSuccessRefreshToken({ setAccessToken });
 
-  /** SET EntityListId ON SUCCESS UPLOAD IMAGE */
-  useSetEntityListId({ setEntityListId });
+  /** FETCH Creator WALLET ADDRESS */
+  const { publicAddress } = useGetCreatorPublicAddress();
 
-  /** ON SUCCESS, REDIRECT USER TO MISSIONS CREATED SCREEN */
-  // useRedirectToCreatedMissions();
+  /** GET PRIVATE KEY FROM SECURE STORE */
+  const { privateKey } = useGetPrivateKey();
+
+  /** LOGIN USER */
+  // useLogin({ publicAddress, isRegistered: true, privateKey });
+
+  /** SET ACCESS AND REFRESH TOKEN INTO EXPO STORAGE */
+  // useSetTokens();
 
   useEffect(() => {
     const checker = checkMissionCreate({
@@ -90,9 +111,52 @@ const CreatorCreateScreen: FC = () => {
       endDate,
     });
     if (success && checker) {
+      setIsLoading(false);
+      (async () => {
+        const signer = new Wallet(id(privateKey));
+        const sig = await signer.signMessage(nonce.toString());
+        dispatch(
+          loginUser({
+            public_address: publicAddress,
+            signature: sig,
+          }),
+        );
+      })();
+
       setModalVisible(true);
+    } else {
+      setIsLoading(false);
     }
-  }, [bounty, endDate, image, itemsCount, startDate, success]);
+  }, [bounty, success]);
+
+  useEffect(() => {
+    setBounty({
+      companyName: result ? result.profile.company_title : "",
+      email: result ? result.profile.email : "",
+      address: result ? result.profile.address : "",
+      country: result ? result.profile.country : "",
+    });
+    if (!result) {
+      setModalVisible(false);
+      setModalVerifyVisiable(false);
+    } else if (result.status === "new") {
+      setModalVisible(true);
+    } else if (result.status === "verified") {
+      setModalVerifyVisiable(true);
+    } else {
+      setModalVisible(false);
+      setModalVerifyVisiable(false);
+    }
+  }, [result]);
+
+  useEffect(() => {
+    const secureToStore = async (token: string) => {
+      await setValueIntoSecureCode(StorageType.ACCESS_TOKEN, token);
+    };
+    if (status === "success") {
+      secureToStore(access_token);
+    }
+  }, [access_token, status]);
 
   const handleChange = useCallback(
     (key: keyof CreatorDoc) => (text: string) => {
@@ -104,12 +168,6 @@ const CreatorCreateScreen: FC = () => {
     [bounty, setBounty],
   );
 
-  const imageRequirements = {
-    materialType: bounty.materialType,
-    materialSize: bounty.materialSize,
-    materialNumber: bounty.materialNumber,
-  };
-
   const handleCreate = () => {
     const checker = checkMissionCreate({
       bounty,
@@ -118,39 +176,42 @@ const CreatorCreateScreen: FC = () => {
       startDate,
       endDate,
     });
-    if (entityListId && checker) {
+
+    if (checker) {
+      setIsLoading(true);
       const formData = new FormData();
-      formData.append("company_name", bounty.companyName);
+      formData.append("company_title", bounty.companyName);
       formData.append("email", bounty.email);
       formData.append("address", bounty.address);
       formData.append("country", bounty.country);
-      formData.append("bounty_type", BountyType.UPLOAD);
-      formData.append("company_image", formDataFile as unknown as Blob);
-      formData.append("image_format", formDataFile?.type || "jpeg, jpg, png");
+      formData.append("public_address", publicAddress);
+      formData.append("source", "recyclium");
+      formData.append("image", formDataFile as unknown as Blob);
 
-      if (accessToken) {
+      Promise.all([
         dispatch(
           createNewMission({
             formData,
             accessToken,
           }),
-        );
-      }
+        ),
+        dispatch(getUserNonce({ public_address: publicAddress })),
+      ]);
     }
   };
 
   /** ON REFRESH LOAD DATA */
-  const onRefresh = () => {
-    setRefreshing(true);
-    if (refreshToken) {
-      dispatch(refreshAccessToken({ refresh_token: refreshToken }));
-    }
-    wait(300).then(() => setRefreshing(false));
-  };
+  // const onRefresh = () => {
+  //   setRefreshing(true);
+  //   if (refreshToken) {
+  //     dispatch(refreshAccessToken({ refresh_token: refreshToken }));
+  //   }
+  //   wait(300).then(() => setRefreshing(false));
+  // };
 
   return (
     <SafeAreaView className="flex-1 bg-01-creator-background-dark-color">
-      {loading ? <Spinner /> : null}
+      {isLoading ? <Spinner /> : null}
       <View className="flex flex-row justify-between h-12 items-center px-8">
         <BackButton />
         <HeaderTitle navigateToHome={ROUTES.HOME} bigIcon />
@@ -170,7 +231,7 @@ const CreatorCreateScreen: FC = () => {
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
-                onRefresh={onRefresh}
+                // onRefresh={onRefresh}
                 tintColor="#FFFFFF"
                 progressBackgroundColor="#FFFFFF"
               />
@@ -209,7 +270,22 @@ const CreatorCreateScreen: FC = () => {
         statusBarTranslucent
         onRequestClose={() => setModalVisible(false)}
       >
-        <ModalMissionCreateThanks setModalVisible={setModalVisible} from="Home"/>
+        <ModalMissionCreateThanks
+          setModalVisible={setModalVisible}
+          from="Home"
+        />
+      </Modal>
+      <Modal
+        transparent
+        animationType="slide"
+        visible={modalVerifyVisiable}
+        statusBarTranslucent
+        onRequestClose={() => setModalVerifyVisiable(false)}
+      >
+        <ModalApplicationVerified
+          setModalVerifyVisiable={setModalVerifyVisiable}
+          from="Creator"
+        />
       </Modal>
     </SafeAreaView>
   );

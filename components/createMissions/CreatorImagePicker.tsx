@@ -21,6 +21,7 @@ type Props = {
   setImage: (arg: string) => void;
   accessToken: string;
   setFormDataFile: (arg: FormDataFile) => void;
+  bgColor: undefined;
 };
 
 const CreatorImagePicker: FC<Props> = ({
@@ -28,6 +29,7 @@ const CreatorImagePicker: FC<Props> = ({
   setImage,
   accessToken,
   setFormDataFile,
+  bgColor,
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [imageName, setImageName] = useState<string>("");
@@ -51,6 +53,7 @@ const CreatorImagePicker: FC<Props> = ({
 
       // If permission is granted get Image data to upload
       if (!result.canceled) {
+        setIsLoading(false);
         const { uri, type } = result.assets[0];
         setImage(uri);
 
@@ -63,84 +66,83 @@ const CreatorImagePicker: FC<Props> = ({
           encoding: "base64",
         });
 
-        const imageName = `${new Date().getTime()}.${filename}`;
+        const imageName1 = `${new Date().getTime()}.${filename}`;
 
         // Prepare data for FormData
         const file: FormDataFile = {
           uri: `${uri}`,
-          name: imageName,
+          name: imageName1,
           type: `${type}/${mime}`,
         };
 
         setFormDataFile(file);
+        // const fileData = new FormData();
+        // fileData.append("file", file as unknown as Blob);
+        // // fileData.append("latitude", `${geolocation.lat}`);
+        // // fileData.append("longitude", `${geolocation.lng}`);
 
-        const fileData = new FormData();
-        fileData.append("file", file as unknown as Blob);
-        // fileData.append("latitude", `${geolocation.lat}`);
-        // fileData.append("longitude", `${geolocation.lng}`);
+        // const config = {
+        //   method: "post",
+        //   headers: {
+        //     Authorization: `Bearer ${accessToken}`,
+        //     Accept: "application/json",
+        //     "Content-Type": "multipart/form-data",
+        //   },
+        //   body: fileData,
+        // };
 
-        const config = {
-          method: "post",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
-          },
-          body: fileData,
-        };
+        // try {
+        //   const res = await fetch(
+        //     "https://crab.recyclium.dataunion.app/api/v1/upload-file",
+        //     config,
+        //   );
 
-        try {
-          const res = await fetch(
-            "https://crab.recyclium.dataunion.app/api/v1/upload-file",
-            config,
-          );
+        //   const response = await res.json();
+        //   if (response?.messages) {
+        //     Toast.show({
+        //       type: "error",
+        //       text1: response?.messages,
+        //     });
+        //     setIsLoading(false);
+        //   }
 
-          const response = await res.json();
-          if (response?.messages) {
-            Toast.show({
-              type: "error",
-              text1: response?.messages,
-            });
-            setIsLoading(false);
-          }
-
-          // If there is an ID from the server response,
-          // call Action to finish the upload
-          if (response?.id) {
-            dispatch(
-              uploadMisssionImage({
-                accessToken,
-                baseImage: base64,
-                entityIds: [response?.id],
-                name: imageName,
-              }),
-            );
-            setIsLoading(false);
-          }
-        } catch (error) {
-          Toast.show({
-            type: "error",
-            text1: error?.message,
-          });
-          setIsLoading(false);
-        }
+        //   // If there is an ID from the server response,
+        //   // call Action to finish the upload
+        //   if (response?.id) {
+        //     dispatch(
+        //       uploadMisssionImage({
+        //         accessToken,
+        //         baseImage: base64,
+        //         entityIds: [response?.id],
+        //         name: imageName,
+        //       }),
+        //     );
+        //     setIsLoading(false);
+        //   }
+        // } catch (error) {
+        //   Toast.show({
+        //     type: "error",
+        //     text1: error?.message,
+        //   });
+        //   setIsLoading(false);
+        // }
       }
 
-      if (result.canceled) {
-        // If user cancelled image upload show alert
-        Alert.alert(
-          "You did not select any image.",
-          "Please, go back, and selet one",
-          [
-            {
-              text: "Cancel",
-            },
-            {
-              text: "OK",
-            },
-          ],
-        );
-      }
+      // if (result.canceled) {
+      //   // If user cancelled image upload show alert
+      //   Alert.alert(
+      //     "You did not select any image.",
+      //     "Please, go back, and select one",
+      //     [
+      //       {
+      //         text: "Cancel",
+      //       },
+      //       {
+      //         text: "OK",
+      //       },
+      //     ],
+      //   );
+      // }
     }
 
     // If user not allowed gallery access show alert message
@@ -162,7 +164,9 @@ const CreatorImagePicker: FC<Props> = ({
   };
 
   return (
-    <View className="flex h-[102px] bg-01-creator-background-dark-color/[0.5] border-2 border-dashed border-[#fff] justify-center items-center">
+    <View
+      className={`flex h-[102px] bg-[${bgColor}] border-2 border-dashed border-[#fff] justify-center items-center`}
+    >
       {isLoading ? <Spinner /> : null}
       {image ? (
         <Image

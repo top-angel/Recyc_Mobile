@@ -9,7 +9,6 @@ type Props = {
 };
 
 const ModalMissionCreateThanks: FC<Props> = ({ from, setModalVisible }) => {
-  console.log('$$$$', from)
   const navigate = useNavigation();
   return (
     <View className="flex-1 justify-end bg-[#101828]/[0.5]">
@@ -54,7 +53,11 @@ const ModalMissionCreateThanks: FC<Props> = ({ from, setModalVisible }) => {
         <TouchableOpacity
           onPress={() => {
             setModalVisible(false);
-            from === 'Home' ? navigate.navigate(ROUTES.CREATE_MISSION) : navigate.navigate(ROUTES.VERIFY_AND_STORAGE_HOME);
+            from === "Home"
+              ? navigate.navigate(ROUTES.CREATE_MISSION)
+              : from === "Collector"
+              ? navigate.navigate(ROUTES.COLLECT_MISSIONS)
+              : navigate.navigate(ROUTES.CREATE_MISSION);
           }}
         >
           <View className="bg-white rounded-[14px] p-4 my-1 border-2 border-[#00B0AD]">

@@ -22,7 +22,6 @@ const useLogin = ({ isRegistered, publicAddress, privateKey }: Props) => {
   useEffect(() => {
     const generateSignature = async () => {
       const signer = new Wallet(id(privateKey));
-
       const sig = await signer.signMessage(nonce.toString());
       dispatch(
         loginUser({

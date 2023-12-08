@@ -14,10 +14,7 @@ export interface IGeocode {
   lng: number;
 }
 
-export interface StorerDoc {
-  id: string;
-  _id?: string;
-  walletAddress: string;
+export interface StorerProfileDoc {
   name: string;
   address: string;
   geocode: IGeocode;
@@ -26,5 +23,11 @@ export interface StorerDoc {
   country: string;
   worktime: string;
   storageSpace: number;
-  createdAt: string;
+}
+
+export interface StorerDoc {
+  id: string;
+  profile: StorerProfileDoc;
+  roles: Array<string>;
+  status: string;
 }

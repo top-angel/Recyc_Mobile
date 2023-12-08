@@ -3,6 +3,8 @@ import { SerializedError } from "@reduxjs/toolkit";
 export interface ICreatorCreateMission {
   loading: boolean;
   success: boolean;
-  id?: string;
-  message?: SerializedError | string;
+  message: string;
+  nonce?: string | number;
+  status?: string;
+  error?: SerializedError | string;
 }

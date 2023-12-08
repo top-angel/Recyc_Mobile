@@ -15,7 +15,6 @@ export const registerUser = createAsyncThunk<IAuthRegister, IRegisterUser>(
       const res = await axiosServer.post("/register", {
         public_address,
       });
-
       Toast.show({
         type: "success",
         text1: "You are registered!",

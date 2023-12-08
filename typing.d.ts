@@ -4,14 +4,15 @@ type Geocode = {
 };
 
 type StorerApplication = {
+  status: unknown;
   name: string;
-  street: string;
+  address: string;
   postalCode: string;
   city: string;
   country: string;
   openings: string;
-  storageSpace: number;
-  geocode: Geocode; 
+  storageSpace: string;
+  geocode: Geocode;
 };
 
 type Chat = {
@@ -47,17 +48,11 @@ type Bounty = {
   email: string;
   address: string;
   country: string;
+};
 
-  // missionTitle: string;
-  // companyTitle: string;
-  // materialType: string;
-  // materialSize: number;
-  // materialNumber: number;
-  // missionDescription: string;
-  // totalRewards: number;
-  // location: string;
-  // imageRequirements: string;
-  // bountyImage: string;
+type CollectorBounty = {
+  firstName: string;
+  lastName: string;
 };
 
 type FormDataFile = {

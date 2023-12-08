@@ -3,7 +3,7 @@ import { StorerDoc } from "../storers.types";
 
 export interface IStorerGetProfile {
   loading: boolean;
-  success: boolean;
-  storer?: StorerDoc;
+  status: boolean;
+  result?: StorerDoc;
   error?: SerializedError | string;
 }

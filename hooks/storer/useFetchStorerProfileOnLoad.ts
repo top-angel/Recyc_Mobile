@@ -4,10 +4,11 @@ import { useAppDispatch, useAppSelector } from "redux/hooks";
 import { getStorerProfile } from "redux/storers/storerGetProfile/storerGetProfile.action";
 
 type Props = {
+  accessToken: string;
   publicAddress: string;
 };
 
-const useFetchStorerProfileOnLoad = ({ publicAddress }: Props) => {
+const useFetchStorerProfileOnLoad = ({ accessToken, publicAddress }: Props) => {
   const { loading: loadingProfile } = useAppSelector(
     (state) => state.storerGetProfile,
   );
@@ -21,7 +22,7 @@ const useFetchStorerProfileOnLoad = ({ publicAddress }: Props) => {
   useEffect(() => {
     if (publicAddress) {
       Promise.all([
-        dispatch(getStorerProfile({ walletAddress: publicAddress })),
+        dispatch(getStorerProfile({ accessToken })),
         dispatch(
           getAllStorerBountyItems({
             page: 0,
@@ -33,7 +34,7 @@ const useFetchStorerProfileOnLoad = ({ publicAddress }: Props) => {
         ),
       ]);
     }
-  }, [publicAddress, dispatch]);
+  }, [publicAddress, dispatch, accessToken]);
 
   return { loading };
 };

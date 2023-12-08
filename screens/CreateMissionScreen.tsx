@@ -1,38 +1,39 @@
-import { View, ScrollView, Text, RefreshControl } from "react-native";
-import { memo, FC, useState } from "react";
+import {
+  View,
+  ScrollView,
+  Text,
+  RefreshControl,
+  TouchableOpacity,
+} from "react-native";
+import { memo, FC, useState, useEffect } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import DetailsRecycliumOptionCard from "components/global/DetailsRecycliumOptionCard";
-import Title from "../components/global/Title";
+import { useGetStorerPublicAddress } from "hooks/storer/useGetStorerPublicAddress";
+import { useFetchStorerProfileOnLoad } from "hooks/storer/useFetchStorerProfileOnLoad";
+import { StorageType } from "enums/storageTypes";
+import { wait } from "lib/waitTimeout";
+import { useGetCreatorPublicAddress } from "hooks/aggregates/useGetCreatorPublicAddress";
+import { getStorerProfile } from "redux/storers/storerGetProfile/storerGetProfile.action";
 import { useShowNavigationHeader } from "../hooks/useShowNavigationHeader";
 import { RootStackParamList, ROUTES } from "../navigation/NavigationTypes";
 import CreatorHomeBanner from "../components/createMissions/CreatorHomeBanner";
-import DetailsOptionCard from "../components/global/DetailsOptionCard";
-import CreditCardIcon from "../components/icons/CreditCardIcon";
-import ArrowRightIcon from "../components/icons/ArrowRightIcon";
-import UserIcon from "../components/icons/UserIcon";
-import MessageCircleIcon from "../components/icons/MessageCircleIcon";
-import { useLogin } from "../hooks/creators/useLogin";
-import { useCreateEthAccount } from "../hooks/creators/useCreateEthAccount";
-import { useGetPrivateKey } from "../hooks/creators/useGetPrivateKey";
-import { useCheckUserRegistered } from "../hooks/creators/useCheckUserRegistered";
-import { useRegisterUser } from "../hooks/creators/useRegisterUser";
-import { useGetNonce } from "../hooks/creators/useGetNonce";
-import { useSetTokens } from "../hooks/creators/useSetTokens";
 import Spinner from "../components/global/Spinner";
-import { useFetchMissionsOnLoad } from "../hooks/creators/useFetchMissionsOnLoad";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { ColorSchema } from "../enums/colorSchema";
-import { refreshAccessToken } from "../redux/auth/authRefreshToken/authRefreshToken.actions";
-import { wait } from "../lib/waitTimeout";
 import { getUserNonce } from "../redux/auth/authGetNonce/authGetNonce.actions";
-import { useGetTokens } from "../hooks/creators/useGetTokens";
 import HeaderTitle from "../components/header/HeaderTitle";
+import { useGetCollectorPublicAddress } from "../hooks/aggregates/useGetCollectorPublicAddress";
+import { getValueFromSecureStore } from "../lib/secureStore";
+import { getCreatorProfile } from "../redux/creators/creatorGetProfile/creatorGetProfile.action";
+import { getCollectorProfile } from "../redux/collector/collectorGetProfile/collectorGetProfile.action";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  ROUTES.CREATE_MISSION
+  ROUTES.COLLECT_REGISTRATION,
+  ROUTES.COLLECT_MISSIONS
 >;
 
 const CreateMissionScreen: FC = () => {
@@ -42,11 +43,57 @@ const CreateMissionScreen: FC = () => {
   const [isRegistered, setIsRegistered] = useState<boolean | undefined>(
     undefined,
   );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string>("");
-  const [refreshToken, setRefreshToken] = useState<string>("");
+  const [accessTokenCreator, setAccessTokenCreator] = useState<string>("");
+
+  const [nextScreen, setNextScreen] = useState<string>("");
 
   const { total } = useAppSelector((state) => state.missionsGetByUser);
   const dispatch = useAppDispatch();
+
+  const { nonce, success, status } = useAppSelector(
+    (state) => state.authGetNonce,
+  );
+
+  useEffect(() => {
+    if (success && status === "exists") {
+      setIsLoading(false);
+      setNextScreen("");
+      if (nextScreen === "Collector") {
+        navigate.navigate(ROUTES.COLLECT_MISSIONS);
+      }
+      if (nextScreen === "Storer") {
+        const moveToStore = async () => {
+          const accessTokCreator = await getValueFromSecureStore(
+            StorageType.ACCESS_TOKEN,
+          );
+          const accessTokStorer = await getValueFromSecureStore(
+            StorageType.ACCESS_STORER_TOKEN,
+          );
+          if (accessTokCreator) {
+            Toast.show({
+              type: "error",
+              text1: "You are already a creator, you cannot become a storer.",
+            });
+          } else {
+            navigate.navigate(ROUTES.VERIFY_AND_STORAGE);
+          }
+        };
+        moveToStore();
+      }
+    }
+    if (success && status === "not found") {
+      setIsLoading(false);
+      setNextScreen("");
+      if (nextScreen === "Collector") {
+        navigate.navigate(ROUTES.COLLECT_REGISTRATION);
+      }
+      if (nextScreen === "Storer") {
+        navigate.navigate(ROUTES.VERIFY_AND_STORAGE);
+      }
+    }
+  }, [success, status, navigate, nextScreen]);
 
   /* Show navigation header */
   useShowNavigationHeader({
@@ -56,53 +103,96 @@ const CreateMissionScreen: FC = () => {
     navigateToHome: ROUTES.HOME,
   });
 
-  /** ON LOAD GET PRIVATE COLLECTOR KEY */
-  const { privateKey, loading } = useGetPrivateKey();
+  /** FETCH COLLECTOR and Storer WALLET ADDRESS */
+  const publicAddressCollector = useGetCollectorPublicAddress();
+  const publicAddressStorer = useGetStorerPublicAddress();
+  const publicAddressCreator = useGetCreatorPublicAddress();
 
-  /** CREATE ETH WALLET WITH PRIVATE KEY */
-  const { publicAddress } = useCreateEthAccount({ privateKey });
+  const onPressStart = async (val: string) => {
+    setNextScreen(val);
+    if (val === "Collector") {
+      setIsLoading(false);
+      setIsLoading(true);
 
-  /** CHECK IF USER IS REGISTERED */
-  useCheckUserRegistered({ setIsRegistered });
-
-  /** IF isRegistered is false, CALL END-POINT TO REGISTER */
-  useRegisterUser({ publicAddress, isRegistered });
-
-  /** GET TOKENS FROM SECURE STORE */
-  useGetTokens({ setAccessToken, setRefreshToken });
-
-  /** GET NONCE FROM SERVER */
-  useGetNonce({ publicAddress, isRegistered });
-
-  /** LOGIN USER */
-  useLogin({ publicAddress, isRegistered, privateKey });
-
-  /** SET ACCESS AND REFRESH TOKEN INTO EXPO STORAGE */
-  useSetTokens();
-
-  /** FETCH CREATED MISSIONS ON LOAD */
-  useFetchMissionsOnLoad();
-
-  /** ON REFRESH LOAD DATA */
-  const onRefresh = () => {
-    setRefreshing(true);
-    if (refreshToken && accessToken) {
-      Promise.all([
-        dispatch(refreshAccessToken({ refresh_token: refreshToken })),
-        dispatch(getUserNonce({ public_address: publicAddress })),
-      ]);
+      dispatch(
+        getUserNonce({ public_address: publicAddressCollector.publicAddress }),
+      );
+    } else {
+      setIsLoading(true);
+      const accessTokCreator = await getValueFromSecureStore(
+        StorageType.ACCESS_TOKEN,
+      );
+      const accessTokStorer = await getValueFromSecureStore(
+        StorageType.ACCESS_STORER_TOKEN,
+      );
+      if (accessTokCreator) {
+        setIsLoading(false);
+        Toast.show({
+          type: "error",
+          text1: "You are already a creator, you cannot become a storer.",
+        });
+      } else {
+        setIsLoading(false);
+        dispatch(
+          getUserNonce({ public_address: publicAddressStorer.publicAddress }),
+        );
+        dispatch(getStorerProfile({ accessToken: accessTokStorer }));
+      }
     }
-    wait(300).then(() => setRefreshing(false));
   };
+
+  const onClickedCreator = async () => {
+    const accessTokCreator = await getValueFromSecureStore(
+      StorageType.ACCESS_TOKEN,
+    );
+    const accessTokStorer = await getValueFromSecureStore(
+      StorageType.ACCESS_STORER_TOKEN,
+    );
+    if (accessTokStorer) {
+      Toast.show({
+        type: "error",
+        text1: "You are already a storer, you cannot become a creator.",
+      });
+    } else {
+      dispatch(
+        getUserNonce({ public_address: publicAddressCreator.publicAddress }),
+      );
+      dispatch(getCreatorProfile({ accessToken: accessTokCreator }));
+      navigate.navigate(ROUTES.CREATE_MISSION_CREATE);
+    }
+  };
+
+  /** FETCH STORER PROFILE ON LOAD */
+  // const { loading } = useFetchStorerProfileOnLoad({
+  //   accessToken,
+  //   publicAddress: publicAddressStorer.publicAddress,
+  // });
+
+  // wait(300).then(async () => {
+  //   const accessTok = await getValueFromSecureStore(
+  //     StorageType.ACCESS_STORER_TOKEN,
+  //   );
+  //   setAccessToken(accessTok);
+
+  //   const accessTokCreator = await getValueFromSecureStore(
+  //     StorageType.ACCESS_TOKEN,
+  //   );
+  //   setAccessTokenCreator(accessTokCreator);
+  // });
 
   return (
     <SafeAreaView className="flex-1 bg-01-creator-background-color">
-      {loading ? <Spinner /> : null}
+      {isLoading ? <Spinner /> : null}
       <View className="flex-1 bg-red-400justify-between">
         <View className="flex p-4">
           <View className="flex flex-row justify-between">
             <HeaderTitle navigateToHome={ROUTES.HOME} />
-            <CreatorHomeBanner />
+            <TouchableOpacity
+              className="flex flex-row"
+              onPress={onClickedCreator}
+            >
+              <CreatorHomeBanner />
+            </TouchableOpacity>
           </View>
           <Text
             style={{ fontFamily: "Nunito" }}
@@ -123,7 +213,7 @@ const CreateMissionScreen: FC = () => {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={onRefresh}
+              // onRefresh={onRefresh}
               tintColor="#FFFFFF"
               progressBackgroundColor="#FFFFFF"
             />
@@ -136,6 +226,7 @@ const CreateMissionScreen: FC = () => {
               titleColor={ColorSchema.COLLECTOR_COLOR}
               subtitleColor={ColorSchema.COLLECTOR_COLOR_ICON}
               buttonColor={ColorSchema.COLLECTOR_COLOR}
+              onPressStart={() => onPressStart("Collector")}
             />
             <View className="flex mt-5" />
             <DetailsRecycliumOptionCard
@@ -144,6 +235,7 @@ const CreateMissionScreen: FC = () => {
               titleColor={ColorSchema.STORER_COLOR_ICON}
               subtitleColor={ColorSchema.STORER_COLOR_TITLE}
               buttonColor={ColorSchema.STORER_COLOR}
+              onPressStart={() => onPressStart("Storer")}
             />
           </View>
         </ScrollView>

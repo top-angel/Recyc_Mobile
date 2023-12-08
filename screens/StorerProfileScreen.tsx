@@ -37,13 +37,12 @@ const StorerProfileScreen: FC = () => {
   const [page] = useState<number>(0);
   const [perPage] = useState<number>(10);
 
-  const { storer } = useAppSelector((state) => state.storerGetProfile);
+  const storerProfileInfo = useAppSelector((state) => state.storerGetProfile);
   const { total } = useAppSelector((state) => state.bountyGetStorerItems);
 
-  const [description, setDescription] = useState<string>(`10.00 - 17.00 Weekdays
-  Closed on Weekends
-  
-  Please bring your items through the front door :)`);
+  const [description, setDescription] = useState<string>(
+    storerProfileInfo.result.profile.worktime,
+  );
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   /* Show navigation header */
@@ -64,15 +63,15 @@ const StorerProfileScreen: FC = () => {
     publicAddress,
   });
 
-  const handleCopy = async () => {
-    if (storer) {
-      await Clipboard.setStringAsync(storer.walletAddress);
-      Toast.show({
-        type: "success",
-        text1: "Copied to clipboard!",
-      });
-    }
-  };
+  // const handleCopy = async () => {
+  //   if (storer) {
+  //     await Clipboard.setStringAsync(storer.walletAddress);
+  //     Toast.show({
+  //       type: "success",
+  //       text1: "Copied to clipboard!",
+  //     });
+  //   }
+  // };
 
   return (
     <SafeAreaView className="flex-1 bg-03-green-mission">
@@ -86,7 +85,7 @@ const StorerProfileScreen: FC = () => {
         <View className="flex-1 p-4">
           <View className="flex flex-row items-center justify-between -mt-3">
             <Title title="Profile" textColor="#FFFFFF" />
-            {storer ? (
+            {/* {storer ? (
               <TouchableOpacity onPress={handleCopy}>
                 <View className="flex flex-row items-center">
                   <Text
@@ -107,7 +106,7 @@ const StorerProfileScreen: FC = () => {
                   />
                 </View>
               </TouchableOpacity>
-            ) : null}
+            ) : null} */}
           </View>
 
           {/* Cards */}
@@ -137,7 +136,7 @@ const StorerProfileScreen: FC = () => {
                 />
               }
               title="Missions"
-              amount="53"
+              amount="0"
               footer="Missions"
             />
           </View>
@@ -154,7 +153,7 @@ const StorerProfileScreen: FC = () => {
                 />
               }
               title="Companies"
-              amount="19"
+              amount="0"
               footer="Companies"
             />
             <ProfileCard
@@ -168,7 +167,7 @@ const StorerProfileScreen: FC = () => {
                 />
               }
               title="Collectors"
-              amount="134"
+              amount="0"
               footer="Collectors"
             />
           </View>
@@ -251,7 +250,7 @@ const StorerProfileScreen: FC = () => {
         animationType="slide"
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
-        // statusBarTranslucent
+        statusBarTranslucent
       >
         <ModalReportCollector setModalVisible={setModalVisible} />
       </Modal>

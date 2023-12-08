@@ -34,16 +34,24 @@ import storerNewApplicationSlice from "./storers/storerNewApplication/storerNewA
 import storerSearchGeolocationSlice from "./storers/storerSearchGeolocation/storerSearchGeolocation.slice";
 import storerTriggerChatSlice from "./storers/storerTriggerChat/storerTriggerChat.slice";
 import linkGetAllSlice from "./links/linkGetAll/linkGetAll.slice";
+import createCollectorNewSlice from "./collector/registrationCollector/registrationCollector.slice";
+import setNewIncidentSlice from "./collector/setIncident/setIncident.slice";
+import creatorGetProfileSlice from "./creators/creatorGetProfile/creatorGetProfile.slice";
+import authStorerLoginSlice from "./auth/authStorerLogin/authStorerLogin.slice";
+import authCollectorLoginSlice from "./auth/authCollectorLogin/authCollectorLogin.slice";
 
 const reducer = combineReducers({
   storerNewApplication: storerNewApplicationSlice.reducer,
   storerTriggerChat: storerTriggerChatSlice.reducer,
   authLogin: authLoginSlice.reducer,
+  authStorerLogin: authStorerLoginSlice.reducer,
+  authCollectorLogin: authCollectorLoginSlice.reducer,
   authRegister: authRegisterSlice.reducer,
   authGetNonce: authGetNonceSlice.reducer,
   authRefreshToken: authRefreshTokenSlice.reducer,
   creatorUploadImage: creatorUploadImageSlice.reducer,
   creatorMissionNew: creatorMissionNewSlice.reducer,
+  createCollectorNew: createCollectorNewSlice.reducer,
   globalScreenColor: globalScreenColorSlice.reducer,
   globalSetGeolocation: globalSetGeolocationSlice.reducer,
   missionsGetByUser: missionsGetByUserSlice.reducer,
@@ -71,6 +79,8 @@ const reducer = combineReducers({
   storerSearchGeolocation: storerSearchGeolocationSlice.reducer,
   storerGetById: storerGetByIdSlice.reducer,
   linkGetAll: linkGetAllSlice.reducer,
+  setNewIncident: setNewIncidentSlice.reducer,
+  creatorGetProfile: creatorGetProfileSlice.reducer,
 });
 
 export default reducer;

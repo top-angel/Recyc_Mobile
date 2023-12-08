@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getStorerProfile } from "./storerGetProfile.action";
 import { IStorerGetProfile } from "./storerGetProfile.types";
+import { StorerDoc } from "../storers.types";
 
 const storerGetProfileState: IStorerGetProfile = {
   loading: false,
-  success: false,
-  storer: undefined,
+  status: false,
+  result: undefined,
   error: undefined,
 };
 
@@ -16,15 +17,15 @@ const storerGetProfileSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getStorerProfile.pending, (state) => {
       state.loading = true;
-      state.success = false;
+      state.status = false;
     });
     builder.addCase(getStorerProfile.fulfilled, (state, action) => {
       state.loading = false;
-      state.success = action.payload.success;
-      state.storer = action.payload.storer;
+      state.status = action.payload.status;
+      state.result = action.payload.result;
     });
     builder.addCase(getStorerProfile.rejected, (state, action) => {
-      state.loading = false;
+      state.status = false;
       state.error = action.payload as { message: string };
     });
   },

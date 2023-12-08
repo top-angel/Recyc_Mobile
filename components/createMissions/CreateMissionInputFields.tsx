@@ -120,6 +120,7 @@ const CreateMissionInputFields: FC<Props> = ({
           setImage={setImage}
           accessToken={accessToken}
           setFormDataFile={setFormDataFile}
+          bgColor="#10182880"
         />
       </View>
 

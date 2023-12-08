@@ -2,7 +2,7 @@
   "expo": {
     "name": "Recyclium Mobile App",
     "slug": "recyclium-mobile-app",
-    "description": "Application for collectiong and restoring bottles to help nature",
+    "description": "Application for collecting and restoring bottles to help nature",
     "version": "1.0.13",
     "orientation": "portrait",
     "icon": "./assets/icon_recyclium.png",
@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.dataunion.Recyclium",
-      "buildNumber": "1.0.10",
+      "buildNumber": "1.0.16",
       "config": {
         "googleMapsApiKey": "AIzaSyDU8YrHPiNQD_KnXrY1Rew9_NAJ_NEsGL8",
         "usesNonExemptEncryption": false
@@ -51,9 +51,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    // "runtimeVersion": {
-    //   "policy": "appVersion"
-    // },
     "extra": {
       "eas": {
         "projectId": "c9b68b85-e8e5-42a8-adc6-ec9502719e5d"
@@ -79,13 +76,7 @@
         {
           "cameraPermission": "Allow app to access your camera."
         }
-      ],
-      [
-        "expo-updates",
-        {
-          "username": "enumdev"
-        }
-      ] 
+      ]
     ]
   }
 }

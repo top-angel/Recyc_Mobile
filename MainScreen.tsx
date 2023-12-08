@@ -8,6 +8,7 @@ import Toast from "react-native-toast-message";
 import CollectorWallet from "screens/CollectorWallet";
 import StorerWallet from "screens/StorerWallet";
 import { useCheckPrivateKey } from "hooks/home/useCheckPrivateKey";
+import CollectorRegistration from "screens/CollectorRegistration";
 import { toastConfig } from "./lib/configToast";
 import HomeScreen from "./screens/HomeScreen";
 import { RootStackParamList, ROUTES } from "./navigation/NavigationTypes";
@@ -201,6 +202,13 @@ const MainScreen: FC = () => {
           <Stack.Screen
             name={ROUTES.CREATE_TRACE_REPORT}
             component={CreatorTraceReportScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name={ROUTES.COLLECT_REGISTRATION}
+            component={CollectorRegistration}
             options={{
               headerShown: false,
             }}

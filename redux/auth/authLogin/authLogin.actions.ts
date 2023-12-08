@@ -17,7 +17,6 @@ export const loginUser = createAsyncThunk<IAuthLogin, ILoginUser>(
         public_address,
         signature,
       });
-
       Toast.show({
         type: "success",
         text1: "You are now logged in",

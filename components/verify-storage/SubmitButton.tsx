@@ -19,7 +19,7 @@ const SubmitButton: FC<Props> = ({ title, handleSubmit, isTermsagree }) => {
           style={{ fontFamily: "Nunito" }}
           className="text-[#FFFFFF] text-[20px] leading-[24px] font-bold text-center"
         >
-          Submit Creator Application
+          {title}
         </Text>
       </View>
     </TouchableOpacity>

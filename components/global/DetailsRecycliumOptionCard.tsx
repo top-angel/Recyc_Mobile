@@ -2,10 +2,6 @@ import { memo, FC, ReactElement } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import CollectorIcon from "components/icons/CollectorIcon";
 import StorerIcon from "components/icons/StorerIcon";
-import CollectorSubtitleCategory from "components/createMissions/CollectorSubtitleCategory";
-import { useNavigation } from "@react-navigation/native";
-
-import { ROUTES } from "navigation/NavigationTypes";
 
 type Props = {
   title: string;
@@ -15,6 +11,7 @@ type Props = {
   titleColor: string;
   subtitleColor: string;
   buttonColor: string;
+  onPressStart: (val: string) => void;
 };
 
 const DetailsOptionCard: FC<Props> = ({
@@ -25,17 +22,8 @@ const DetailsOptionCard: FC<Props> = ({
   titleColor,
   subtitleColor,
   buttonColor,
+  onPressStart,
 }) => {
-  const navigate = useNavigation();
-
-  const onPressStart = (val: string) => {
-    if (val === 'Collector') {
-      navigate.navigate(ROUTES.COLLECT_MISSIONS)
-    } else {
-      navigate.navigate(ROUTES.VERIFY_AND_STORAGE)
-    }
-  }
-
   return (
     <View
       className="flex-1 bg-white rounded-xl border-[3px] p-6"
@@ -55,7 +43,7 @@ const DetailsOptionCard: FC<Props> = ({
           style={{ fontFamily: "Nunito", color: subtitleColor }}
           className="text-[12px] leading-[20px] font-medium"
         >
-          {title === "Collector" ? 5389245 : 6628}
+          0
         </Text>
       </View>
       <Text

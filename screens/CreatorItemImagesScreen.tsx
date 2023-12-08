@@ -28,26 +28,6 @@ const CreatorItemImages: FC = () => {
     }
   }, [success, images.length]);
 
-  // useEffect(() => {
-  //   const fetchImage = async () => {
-  //     const config = {
-  //       method: "post",
-  //     };
-
-  //     const res = await fetch(
-  //       `https://crab.dev.dataunion.app/api/v1/get-image-by-id?id=${images[0]}`,
-  //       config,
-  //     );
-  //     console.log(res);
-  //     const response = await res.json();
-  //     console.log(response);
-  //   };
-
-  //   if (success && images.length > 0) {
-  //     fetchImage();
-  //   }
-  // }, [success, images]);
-
   return (
     <SafeAreaView style={StyleSheet.absoluteFillObject}>
       <ScrollView className="flex-1 p-0 bg-01-creator-dark">

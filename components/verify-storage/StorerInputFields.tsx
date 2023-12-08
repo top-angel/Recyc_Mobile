@@ -1,11 +1,4 @@
-import {
-  Platform,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  ScrollView,
-} from "react-native";
+import { Platform, TextInput, View, ScrollView } from "react-native";
 import { FC, memo, useRef, useState } from "react";
 import {
   GooglePlaceData,
@@ -22,11 +15,8 @@ type Props = {
   handleChange: (key: keyof StorersDoc, value: string) => void;
 };
 
-const StorerInputFields: FC<Props> = ({
-  application,
-  handleChange,
-}) => {
-  const [address1, setAddress1] = useState<string>("");
+const StorerInputFields: FC<Props> = ({ application, handleChange }) => {
+  const [address1, setAddress1] = useState<string>(application.address ?? "");
 
   const refAddress1 = useRef<TextInput>(null);
 
@@ -80,7 +70,7 @@ const StorerInputFields: FC<Props> = ({
   };
 
   const onChangeAddress = (addr: string, details: GooglePlaceDetail | null) => {
-    handleChange("street", addr);
+    handleChange("address", addr);
     setAddress1(addr);
   };
 
@@ -97,7 +87,7 @@ const StorerInputFields: FC<Props> = ({
             fontFamily: "Nunito",
             width: "100%",
           }}
-          placeholder="Joe Buxtonyou"
+          placeholder="First Name"
           keyboardType="default"
           value={application.name}
           placeholderTextColor={ColorSchema.PLACEHOLDER_COLOR}
@@ -184,7 +174,7 @@ const StorerInputFields: FC<Props> = ({
           value={application.openings}
           placeholderTextColor={ColorSchema.PLACEHOLDER_COLOR}
           onChangeText={(input: string) => {
-            handleChange("openings", input.trim());
+            handleChange("openings", input);
           }}
           className="p-4 bg-white rounded-[12px] text-[14px] leading-[20px] text-[#1E5455] font-medium"
         />

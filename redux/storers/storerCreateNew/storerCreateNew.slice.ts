@@ -5,6 +5,8 @@ import { IStorerCreateNew } from "./storerCreateNew.types";
 const storerCreateNewState: IStorerCreateNew = {
   loading: false,
   success: false,
+  nonce: undefined,
+  message: undefined,
   error: undefined,
 };
 
@@ -21,10 +23,14 @@ const storerCreateNewSlice = createSlice({
     });
     builder.addCase(createNewStorer.fulfilled, (state, action) => {
       state.loading = false;
-      state.success = action.payload.success;
+      state.success = true;
+      state.nonce = action.payload.nonce;
+      state.status = action.payload.status;
+      state.message = action.payload.message;
     });
     builder.addCase(createNewStorer.rejected, (state, action) => {
       state.loading = false;
+      state.success = undefined;
       state.error = action.payload as { message: string };
     });
   },

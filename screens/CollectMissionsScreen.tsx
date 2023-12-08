@@ -8,23 +8,22 @@ import {
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { memo, FC, useState, useRef, useEffect, useMemo } from "react";
+import React, { memo, FC, useState, useMemo } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import Carousel from "react-native-snap-carousel";
 import CameraCollectorIcon from "components/icons/CameraCollectorIcon";
 import MissionIcon from "components/icons/MissionIcon";
-import BackButton from "components/header/BackButton";
+import CustomBackButton from "components/header/CustomBackButton";
 import HeaderTitle from "components/header/HeaderTitle";
+import { useGetCollectorPublicAddress } from "hooks/aggregates/useGetCollectorPublicAddress";
+import { useSetTokens } from "hooks/collectors/useSetTokens";
+import { StorageType } from "enums/storageTypes";
 import { useShowNavigationHeader } from "../hooks/useShowNavigationHeader";
 import { RootStackParamList, ROUTES } from "../navigation/NavigationTypes";
-import { useCreateEthAccount } from "../hooks/creators/useCreateEthAccount";
 import { useGetPrivateKey } from "../hooks/collectors/useGetPrivateKey";
-import { useCheckUserRegistered } from "../hooks/collectors/useCheckUserRegistered";
-import { useRegisterUser } from "../hooks/collectors/useRegisterUser";
 import { useGetNonce } from "../hooks/creators/useGetNonce";
 import { useLogin } from "../hooks/creators/useLogin";
-import { useSetTokens } from "../hooks/creators/useSetTokens";
 import { useFetchAllMissionsOnLoad } from "../hooks/collectors/useFetchAllMissionsOnLoad";
 import CollectorMissionSearch from "../components/collectors/CollectorMissionSearch";
 import Spinner from "../components/global/Spinner";
@@ -38,10 +37,10 @@ import MessageCircleIcon from "../components/icons/MessageCircleIcon";
 import ModalMissionFilter from "../components/collectors/ModalMissionFilter";
 import { ColorSchema } from "../enums/colorSchema";
 import { getMissionInProgress } from "../redux/missions/missionGetInProgress/missionGetInProgress.actions";
-import { useGetTokens } from "../hooks/creators/useGetTokens";
 import { refreshAccessToken } from "../redux/auth/authRefreshToken/authRefreshToken.actions";
 import { getUserNonce } from "../redux/auth/authGetNonce/authGetNonce.actions";
 import { wait } from "../lib/waitTimeout";
+import { getValueFromSecureStore } from "../lib/secureStore";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -82,34 +81,27 @@ const CollectMissionsScreen: FC = () => {
   /** ON LOAD GET PRIVATE COLLECTOR KEY */
   const { loading } = useGetPrivateKey({ setPrivateKey });
 
-  /** CREATE ETH WALLET WITH PRIVATE KEY */
-  const { publicAddress } = useCreateEthAccount({ privateKey });
-
-  /** CHECK IF USER IS REGISTERED */
-  useCheckUserRegistered({ setIsRegistered });
-
-  /** IF isRegistered is false, CALL END-POINT TO REGISTER */
-  useRegisterUser({ publicAddress, isRegistered });
+  /** FETCH COLLECTOR and Storer WALLET ADDRESS */
+  const { publicAddress } = useGetCollectorPublicAddress();
 
   /** GET NONCE FROM SERVER */
   useGetNonce({ publicAddress, isRegistered });
 
   /** LOGIN USER */
-  useLogin({ publicAddress, isRegistered, privateKey });
-
-  /** GET TOKENS FROM SECURE STORE */
-  useGetTokens({ setAccessToken, setRefreshToken });
+  useLogin({ publicAddress, isRegistered: true, privateKey });
 
   /** SET ACCESS AND REFRESH TOKEN INTO EXPO STORAGE */
   useSetTokens();
 
+  wait(300).then(async () => {
+    const accessTok = await getValueFromSecureStore(
+      StorageType.ACCESS_COLLECTOR_TOKEN,
+    );
+    setAccessToken(accessTok);
+  });
+
   /** FETCH MISSION SMALL PART ON LOAD */
   useFetchAllMissionsOnLoad();
-
-  // const viewConfig = {
-  //   viewAreaCoveragePercentThreshold: 50,
-  //   waitForInteraction: true,
-  // };
 
   const handleRedirect = (bountyId: string) => {
     if (bountyId && accessToken) {
@@ -144,7 +136,6 @@ const CollectMissionsScreen: FC = () => {
   );
 
   const renderItem = ({ item, index }) => {
-    console.log('---->>>', item.id)
     return (
       <TouchableOpacity onPress={() => handleRedirect(item.id)} key={item.id}>
         <MissionInProgressCard
@@ -160,7 +151,7 @@ const CollectMissionsScreen: FC = () => {
     <SafeAreaView className="flex-1 bg-02-purple-mission">
       {loading ? <Spinner /> : null}
       <View className="flex flex-row justify-between h-12 items-center px-8">
-        <BackButton />
+        <CustomBackButton goBackAction={() => navigate.pop(2)} />
         <HeaderTitle navigateToHome={ROUTES.HOME} bigIcon />
         <View className="w-6" />
       </View>
@@ -313,7 +304,7 @@ const CollectMissionsScreen: FC = () => {
           >
             <DetailsOptionCard
               title="Wallet"
-              subtitle="439.38$ Earned so far"
+              subtitle="0$ Earned so far"
               titleColor={ColorSchema.CREATOR_COLOR_ICON}
               subtitleColor="rgba(30, 83, 85, 0.62)"
               iconLeft={

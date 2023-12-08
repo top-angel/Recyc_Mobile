@@ -7,7 +7,9 @@ const useGetAccessToken = () => {
 
   useEffect(() => {
     const getTokenFromStorage = async () => {
-      const accessTok = await getValueFromSecureStore(StorageType.ACCESS_TOKEN);
+      const accessTok = await getValueFromSecureStore(
+        StorageType.ACCESS_COLLECTOR_TOKEN,
+      );
 
       if (accessTok) {
         setAccessToken(accessTok);

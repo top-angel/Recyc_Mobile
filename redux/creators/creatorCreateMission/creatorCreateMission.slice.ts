@@ -5,8 +5,9 @@ import { ICreatorCreateMission } from "./creatorCreateMission.types";
 const creatorMissionNewState: ICreatorCreateMission = {
   loading: false,
   success: false,
-  id: undefined,
+  nonce: undefined,
   message: undefined,
+  error: undefined,
 };
 
 const creatorMissionNewSlice = createSlice({
@@ -23,11 +24,14 @@ const creatorMissionNewSlice = createSlice({
     builder.addCase(createNewMission.fulfilled, (state, action) => {
       state.loading = false;
       state.success = true;
-      state.id = action.payload.id;
+      state.nonce = action.payload.nonce;
+      state.status = action.payload.status;
+      state.message = action.payload.message;
     });
     builder.addCase(createNewMission.rejected, (state, action) => {
       state.loading = false;
-      state.message = action.payload as { message: string };
+      state.success = undefined;
+      state.error = action.payload as { message: string };
     });
   },
 });

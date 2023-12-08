@@ -102,7 +102,7 @@ const CollectorProfileScreen: FC = () => {
                 />
               }
               title="Stored Items"
-              amount="8,430"
+              amount="0"
               footer="Items"
             />
             <ProfileCard
@@ -116,7 +116,7 @@ const CollectorProfileScreen: FC = () => {
                 />
               }
               title="Missions"
-              amount="53"
+              amount="0"
               footer="Missions"
             />
           </View>
@@ -133,7 +133,7 @@ const CollectorProfileScreen: FC = () => {
                 />
               }
               title="Companies"
-              amount="19"
+              amount="0"
               footer="Companies"
             />
             <ProfileCard
@@ -147,7 +147,7 @@ const CollectorProfileScreen: FC = () => {
                 />
               }
               title="Storers"
-              amount="134"
+              amount="0"
               footer="Storers"
             />
           </View>
@@ -190,7 +190,7 @@ const CollectorProfileScreen: FC = () => {
         animationType="slide"
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
-        // statusBarTranslucent
+        statusBarTranslucent
       >
         <ModalReportStorer setModalVisible={setModalVisible} />
       </Modal>
